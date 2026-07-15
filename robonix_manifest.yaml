@@ -15,7 +15,7 @@ catalog:
     - navigation
     - mapping
   maintainers:
-    - wheatfox <wheatfox17@icloud.com>
+    - Xiangrui Cheng <sherry-part@users.noreply.github.com>
 
 # Robonix deploy manifest for the WHEELTEC R550 + Livox MID-360
 # + Intel RealSense D435i stack, runs on the Jetson Orin (syswonder
