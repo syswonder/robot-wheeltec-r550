@@ -1,5 +1,5 @@
 catalog:
-  name: robonix.robot.wheeltec.r550_minitank
+  name: robonix.robot.wheeltec.r550
   version: 0.1.0
   description: Wheeltec R550 mini_tank — 2D SLAM mapping deploy (N10P lidar + rtabmap).
   tags:
