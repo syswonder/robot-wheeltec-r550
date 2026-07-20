@@ -17,6 +17,15 @@ name: wheeltec_robot
 # replace ${VLM_*} with literal values (keep the secret in env vars).
 env:
   LOG: "INFO"
+  RMW_IMPLEMENTATION: rmw_fastrtps_cpp
+  MAPPING_MAPS_DIR: ${HOME}/.robonix/maps
+  ROBONIX_SOURCE_PATH: ${HOME}/robonix
+  SPEECH_BACKEND: tencent
+
+  # Build-time mirrors only. All model weights are prepared by build scripts;
+  # start must not download models.
+  HF_ENDPOINT: https://hf-mirror.com
+  PIP_INDEX_URL: https://pypi.tuna.tsinghua.edu.cn/simple
 
 # ── system ─────────────────────────────────────────────────────────────────
 # Atlas: capability registry (all primitives/services register here).
@@ -39,6 +48,10 @@ system:
   soma:
     listen: 127.0.0.1:50091
     robot_yaml: /home/wheeltec/Desktop/rbnx_deploy/wheeltec_robot/soma.yaml
+  #vitals:
+    # Vitals consumes Soma's body-health stream and aggregates Robonix module
+    # health. Bind externally so trusted operator clients can read dashboards.
+    #listen: 0.0.0.0:50093
   #WARNING: Impossible for jetson orin nano.
   #scene:
     #manifest: package_manifest.jetson-native.yaml
@@ -113,6 +126,21 @@ primitive:
       intrinsics_topic: /camera/color/camera_info
       frame_id: camera_link
 
+  
+  - name: audio_driver
+    url: https://github.com/syswonder/primitive-audio-driver-rbnx
+    branch: main
+    config:
+      mic_device: null
+      speaker_device: null
+  - name: audio_client_bridge
+    url: https://github.com/syswonder/primitive-audio-client-bridge-rbnx
+    #branch: main
+    config:
+      transport: reverse
+      listen_host: 0.0.0.0
+      listen_port: 60002
+  
 # ── services ────────────────────────────────────────────────────────────────
 service:
   # ── SLAM mapping (rtabmap, 2D LaserScan + wheel odometry) ─────────────
@@ -147,6 +175,7 @@ service:
         odom: r550_chassis
       base_frame: base_link
       odom_frame: odom_combined
+      webui_host: 0.0.0.0
       webui_port: 8091
 
   # ── Navigation (Nav2) ───────────────────────────────────────────────────
@@ -172,3 +201,23 @@ service:
         map: mapping
         odom: r550_chassis
         scan: n10p_lslidar
+  
+  #- name: memory
+    #path: ${ROBONIX_SOURCE_PATH}/services/memsearch
+    #config: {}
+
+ # - name: speech
+  #  path: ${ROBONIX_SOURCE_PATH}/services/speech
+    #config:
+      #speech_backend: tencent
+      #tencent_asr_appid: "1455966216"
+      #tencent_asr_engine: 16k_zh_en
+      #tencent_tts_voice_type: 502003
+      #tencent_tts_region: ap-guangzhou
+# ── skills ──────────────────────────────────────────────────────────────────
+# Skills are user-invocable (LLM/pilot-driven) atomic intents. They lazy-activate:
+# stay INACTIVE at boot and activate on first MCP call.
+skill:
+  - name: explore
+    path: ./skills/skill-explore-rbnx
+    config: {}
