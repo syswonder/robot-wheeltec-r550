@@ -24,8 +24,6 @@ env:
 
   # Build-time mirrors only. All model weights are prepared by build scripts;
   # start must not download models.
-  HF_ENDPOINT: https://hf-mirror.com
-  PIP_INDEX_URL: https://pypi.tuna.tsinghua.edu.cn/simple
 
 # ── system ─────────────────────────────────────────────────────────────────
 # Atlas: capability registry (all primitives/services register here).
@@ -135,7 +133,7 @@ primitive:
       speaker_device: null
   - name: audio_client_bridge
     url: https://github.com/syswonder/primitive-audio-client-bridge-rbnx
-    #branch: main
+    branch: main
     config:
       transport: reverse
       listen_host: 0.0.0.0
@@ -169,10 +167,12 @@ service:
     config:
       params_file: /home/wheeltec/Desktop/rbnx_deploy/wheeltec_robot/config/rtabmap_params.yaml
       algo: rtabmap
-      occupancy_sources: [lidar]
+      occupancy_sources: [lidar,depth]
       sensor_providers:
         lidar2d: n10p_lslidar
         odom: r550_chassis
+        rgb: astra_s_camera
+        depth: astra_s_camera
       base_frame: base_link
       odom_frame: odom_combined
       webui_host: 0.0.0.0
@@ -206,14 +206,14 @@ service:
     #path: ${ROBONIX_SOURCE_PATH}/services/memsearch
     #config: {}
 
- # - name: speech
-  #  path: ${ROBONIX_SOURCE_PATH}/services/speech
-    #config:
-      #speech_backend: tencent
-      #tencent_asr_appid: "1455966216"
-      #tencent_asr_engine: 16k_zh_en
-      #tencent_tts_voice_type: 502003
-      #tencent_tts_region: ap-guangzhou
+  - name: speech
+    path: ${ROBONIX_SOURCE_PATH}/services/speech
+    config:
+      speech_backend: tencent
+      tencent_asr_appid: "1455966216"
+      tencent_asr_engine: 16k_zh_en
+      tencent_tts_voice_type: 502003
+      tencent_tts_region: ap-guangzhou
 # ── skills ──────────────────────────────────────────────────────────────────
 # Skills are user-invocable (LLM/pilot-driven) atomic intents. They lazy-activate:
 # stay INACTIVE at boot and activate on first MCP call.
