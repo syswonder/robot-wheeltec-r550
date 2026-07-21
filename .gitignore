@@ -6,3 +6,4 @@ rbnx-boot/
 __pycache__/
 *.pyc
 .venv/
+boot_native.sh

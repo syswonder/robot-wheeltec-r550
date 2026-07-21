@@ -22,20 +22,18 @@ cd "$SCRIPT_DIR"
 
 # ── config ──────────────────────────────────────────────────────────────────
 # Fill in your VLM credentials here, or pre-export in your shell rc.
-: "${VLM_BASE_URL:=https://dashscope.aliyuncs.com/compatible-mode/v1}"
-: "${VLM_API_KEY:=sk-ws-H.EDRYIYL.u6Oi.MEUCIQDrlzWi9m1ubQf-PIaDpiOn7pmwkdSDu1HLxSm_-_H6zAIgUQABqBnIeT32lFWO6SRwM74MBTIEWazLDVskGuXyTdM}"
-: "${VLM_MODEL:=qwen-vl-max}"
-
-export VLM_BASE_URL VLM_API_KEY VLM_MODEL
+: "${VLM_BASE_URL:=https://api.deepseek.com/v1}"
+: "${VLM_API_KEY:=...}"
+: "${VLM_MODEL:=deepseek-v4-pro}"
+: "${TENCENTCLOUD_SECRET_ID:=...}"
+: "${TENCENTCLOUD_SECRET_KEY:=...}"
+export VLM_BASE_URL VLM_API_KEY VLM_MODEL TENCENTCLOUD_SECRET_ID TENCENTCLOUD_SECRET_KEY
 
 # ROS 2 middleware — default to zenoh for better wireless/discovery performance.
 
 # ROS 2 distro.
 : "${ROS_DISTRO:=humble}"
 
-# RMW — FastDDS (default). Zenoh needs a router and extra deps; switch only when
-# cross-machine wireless discovery is needed.
-export RMW_IMPLEMENTATION="${RMW_IMPLEMENTATION:-rmw_fastrtps_cpp}"
 
 # ── helpers ─────────────────────────────────────────────────────────────────
 RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
