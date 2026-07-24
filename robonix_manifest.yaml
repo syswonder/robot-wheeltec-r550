@@ -202,18 +202,22 @@ service:
         odom: r550_chassis
         scan: n10p_lslidar
   
-  #- name: memory
-    #path: ${ROBONIX_SOURCE_PATH}/services/memsearch
-    #config: {}
+  - name: memory
+    path: ${ROBONIX_SOURCE_PATH}/services/memsearch
+    config: {}
 
   - name: speech
     path: ${ROBONIX_SOURCE_PATH}/services/speech
     config:
       speech_backend: tencent
       tencent_asr_appid: "1455966216"
-      tencent_asr_engine: 16k_zh_en
+      tencent_asr_engine: 16k_zh
       tencent_tts_voice_type: 502003
-      tencent_tts_region: ap-guangzhou
+      tencent_tts_region: ap-shanghai
+
+  - name: voiceprint
+    path: ${ROBONIX_SOURCE_PATH}/services/voiceprint
+    config: {}
 # ── skills ──────────────────────────────────────────────────────────────────
 # Skills are user-invocable (LLM/pilot-driven) atomic intents. They lazy-activate:
 # stay INACTIVE at boot and activate on first MCP call.
