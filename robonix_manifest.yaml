@@ -1,5 +1,5 @@
 catalog:
-  name: robonix.robot.wheeltec.r550
+  name: robonix.robot.wheeltec_robot
   version: 0.1.0
   description: Wheeltec R550 mini_tank — 2D SLAM mapping deploy (N10P lidar + rtabmap).
   tags:
@@ -17,13 +17,6 @@ name: wheeltec_robot
 # replace ${VLM_*} with literal values (keep the secret in env vars).
 env:
   LOG: "INFO"
-  RMW_IMPLEMENTATION: rmw_fastrtps_cpp
-  MAPPING_MAPS_DIR: ${HOME}/.robonix/maps
-  ROBONIX_SOURCE_PATH: ${HOME}/robonix
-  SPEECH_BACKEND: tencent
-
-  # Build-time mirrors only. All model weights are prepared by build scripts;
-  # start must not download models.
 
 # ── system ─────────────────────────────────────────────────────────────────
 # Atlas: capability registry (all primitives/services register here).
@@ -45,11 +38,7 @@ system:
     listen: 0.0.0.0:50081
   soma:
     listen: 127.0.0.1:50091
-    robot_yaml: /home/wheeltec/Desktop/rbnx_deploy/wheeltec_robot/soma.yaml
-  #vitals:
-    # Vitals consumes Soma's body-health stream and aggregates Robonix module
-    # health. Bind externally so trusted operator clients can read dashboards.
-    #listen: 0.0.0.0:50093
+    robot_yaml: ${ROBONIX_DEPLOY_DIR}/robot_wheeltec_r550/soma.yaml
   #WARNING: Impossible for jetson orin nano.
   #scene:
     #manifest: package_manifest.jetson-native.yaml
@@ -71,7 +60,7 @@ primitive:
   # robot_state_publisher so the full TF tree is available to downstream
   # consumers (chassis joint_state_publisher, rtabmap, rviz).
   - name: robot_description
-    path: /home/wheeltec/Desktop/rbnx_deploy/wheeltec_robot/primitives/robot_description
+    path: ${ROBONIX_DEPLOY_DIR}/robot_wheeltec_r550/primitives/robot_description
     config:
       robot_model: mini_tank
 
@@ -84,11 +73,11 @@ primitive:
   #   base_footprint → base_link        (static, z=0.03715 for mini_tank)
   #   base_footprint → gyro_link        (static, all zeros)
   - name: r550_chassis
-    path: /home/wheeltec/Desktop/rbnx_deploy/wheeltec_robot/primitives/r550_chassis
+    path:${ROBONIX_DEPLOY_DIR}/robot_wheeltec_r550/primitives/r550_chassis
     config:
       odom_topic_name: /odom_combined
       imu_topic: /imu/data
-      imu_filter_config: /home/wheeltec/wheeltec_ros2/src/turn_on_wheeltec_robot/config/imu.yaml
+      imu_filter_config: /your/path/imu.yaml
       cmd_vel_topic: /cmd_vel
       base_to_link_z: 0.03715
       enable_imu_filter: true
@@ -102,7 +91,7 @@ primitive:
   # via robot_state_publisher (no extrinsics static_transform_publisher
   # needed — the URDF already defines this joint).
   - name: n10p_lslidar
-    path: /home/wheeltec/Desktop/rbnx_deploy/wheeltec_robot/primitives/n10p_lslidar
+    path: ${ROBONIX_DEPLOY_DIR}/robot_wheeltec_r550/primitives/n10p_lslidar
     config:
       scan_topic: /scan
       frame_id: laser
@@ -124,21 +113,6 @@ primitive:
       intrinsics_topic: /camera/color/camera_info
       frame_id: camera_link
 
-  
-  - name: audio_driver
-    url: https://github.com/syswonder/primitive-audio-driver-rbnx
-    branch: main
-    config:
-      mic_device: null
-      speaker_device: null
-  - name: audio_client_bridge
-    url: https://github.com/syswonder/primitive-audio-client-bridge-rbnx
-    branch: main
-    config:
-      transport: reverse
-      listen_host: 0.0.0.0
-      listen_port: 60002
-  
 # ── services ────────────────────────────────────────────────────────────────
 service:
   # ── SLAM mapping (rtabmap, 2D LaserScan + wheel odometry) ─────────────
@@ -162,20 +136,17 @@ service:
   #
   # Web UI at http://<robot-ip>:8091 — live map preview + save/load/pose.
   - name: mapping
-    path: /home/wheeltec/Desktop/rbnx_deploy/wheeltec_robot/services/service-map-rbnx
+    path: ${ROBONIX_DEPLOY_DIR}/robot_wheeltec_r550/services/service-map-rbnx
     manifest: package_manifest.jetson-native.yaml
     config:
-      params_file: /home/wheeltec/Desktop/rbnx_deploy/wheeltec_robot/config/rtabmap_params.yaml
+      params_file: ${ROBONIX_DEPLOY_DIR}/robot_wheeltec_r550/config/rtabmap_params.yaml
       algo: rtabmap
-      occupancy_sources: [lidar,depth]
+      occupancy_sources: [lidar]
       sensor_providers:
         lidar2d: n10p_lslidar
         odom: r550_chassis
-        rgb: astra_s_camera
-        depth: astra_s_camera
       base_frame: base_link
       odom_frame: odom_combined
-      webui_host: 0.0.0.0
       webui_port: 8091
 
   # ── Navigation (Nav2) ───────────────────────────────────────────────────
@@ -195,29 +166,13 @@ service:
     path: ./services/service-navigation-rbnx
     manifest: package_manifest.jetson-docker.yaml
     config:
-      params_file: /home/wheeltec/Desktop/rbnx_deploy/wheeltec_robot/config/param_mini_tank.yaml
-      bt_xml_file: /home/wheeltec/Desktop/rbnx_deploy/wheeltec_robot/config/navigate.xml
+      params_file: ${ROBONIX_DEPLOY_DIR}/robot_wheeltec_r550/config/param_mini_tank.yaml
+      bt_xml_file: ${ROBONIX_DEPLOY_DIR}/robot_wheeltec_r550/config/navigate.xml
       provider_ids:
         map: mapping
         odom: r550_chassis
         scan: n10p_lslidar
-  
-  - name: memory
-    path: ${ROBONIX_SOURCE_PATH}/services/memsearch
-    config: {}
 
-  - name: speech
-    path: ${ROBONIX_SOURCE_PATH}/services/speech
-    config:
-      speech_backend: tencent
-      tencent_asr_appid: "1455966216"
-      tencent_asr_engine: 16k_zh
-      tencent_tts_voice_type: 502003
-      tencent_tts_region: ap-shanghai
-
-  - name: voiceprint
-    path: ${ROBONIX_SOURCE_PATH}/services/voiceprint
-    config: {}
 # ── skills ──────────────────────────────────────────────────────────────────
 # Skills are user-invocable (LLM/pilot-driven) atomic intents. They lazy-activate:
 # stay INACTIVE at boot and activate on first MCP call.
