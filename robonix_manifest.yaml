@@ -73,7 +73,7 @@ primitive:
   #   base_footprint → base_link        (static, z=0.03715 for mini_tank)
   #   base_footprint → gyro_link        (static, all zeros)
   - name: r550_chassis
-    path:${ROBONIX_DEPLOY_DIR}/robot_wheeltec_r550/primitives/r550_chassis
+    path: ${ROBONIX_DEPLOY_DIR}/robot_wheeltec_r550/primitives/r550_chassis
     config:
       odom_topic_name: /odom_combined
       imu_topic: /imu/data
