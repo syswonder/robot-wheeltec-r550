@@ -60,9 +60,9 @@ primitive:
   # robot_state_publisher so the full TF tree is available to downstream
   # consumers (chassis joint_state_publisher, rtabmap, rviz).
   - name: robot_description
-    path: https://github.com/syswonder/primitive-wheeltec-r550-chassis-rbnx/tree/main/robot_description
-    config:
-      robot_model: mini_tank
+    url: https://github.com/syswonder/primitive-robot-description-rbnx
+    branch: main
+    manifest: package_manifest.native.yaml
 
   # ── 2nd: chassis driver + IMU + EKF ───────────────────────────────────
   # Provides:
