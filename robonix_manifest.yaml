@@ -73,7 +73,7 @@ primitive:
   #   base_footprint → base_link        (static, z=0.03715 for mini_tank)
   #   base_footprint → gyro_link        (static, all zeros)
   - name: r550_chassis
-    path: https://github.com/syswonder/primitive-wheeltec-r550-chassis-rbnx/tree/main/r550_chassis
+    url: https://github.com/syswonder/primitive-wheeltec-r550-chassis-rbnx/tree/main/r550_chassis
     config:
       odom_topic_name: /odom_combined
       imu_topic: /imu/data
@@ -91,7 +91,7 @@ primitive:
   # via robot_state_publisher (no extrinsics static_transform_publisher
   # needed — the URDF already defines this joint).
   - name: n10p_lslidar
-    path: https://github.com/syswonder/primitive-wheeltec-r550-chassis-rbnx/tree/main/n10p_lslidar
+    url: https://github.com/syswonder/primitive-wheeltec-r550-chassis-rbnx/tree/main/n10p_lslidar
     config:
       scan_topic: /scan
       frame_id: laser
@@ -106,7 +106,7 @@ primitive:
   #   robonix/primitive/camera/snapshot       → one-shot RGB JPEG (VLM-facing)
   #   robonix/primitive/camera/depth_snapshot → one-shot depth JPEG
   - name: astra_s_camera
-    path: https://github.com/syswonder/primitive-wheeltec-r550-chassis-rbnx/tree/main/astra_s_camera
+    url: https://github.com/syswonder/primitive-wheeltec-r550-chassis-rbnx/tree/main/astra_s_camera
     config:
       color_topic: /camera/color/image_raw
       depth_topic: /camera/depth/image_raw
@@ -136,7 +136,7 @@ service:
   #
   # Web UI at http://<robot-ip>:8091 — live map preview + save/load/pose.
   - name: mapping
-    path: https://github.com/syswonder/service-map-rbnx
+    url: https://github.com/syswonder/service-map-rbnx
     manifest: package_manifest.jetson-native.yaml
     config:
       params_file: ${ROBONIX_DEPLOY_DIR}/config/rtabmap_params.yaml
@@ -163,7 +163,7 @@ service:
   # manifest (e.g. config/nav2_params.yaml). Copy and tune the example
   # from service-navigation-rbnx/config/nav2_params.example.yml.
   - name: nav2
-    path: https://github.com/syswonder/service-navigation-rbnx
+    url: https://github.com/syswonder/service-navigation-rbnx
     manifest: package_manifest.jetson-docker.yaml
     config:
       params_file: ${ROBONIX_DEPLOY_DIR}/config/param_mini_tank.yaml
@@ -178,5 +178,5 @@ service:
 # stay INACTIVE at boot and activate on first MCP call.
 skill:
   - name: explore
-    path: https://github.com/syswonder/skill-explore-rbnx
+    url: https://github.com/syswonder/skill-explore-rbnx
     config: {}
