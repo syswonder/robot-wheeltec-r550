@@ -73,7 +73,7 @@ primitive:
   #   base_footprint → base_link        (static, z=0.03715 for mini_tank)
   #   base_footprint → gyro_link        (static, all zeros)
   - name: r550_chassis
-    url: https://github.com/syswonder/primitive-wheeltec-r550-chassis-rbnx/tree/main/r550_chassis
+    url: https://github.com/syswonder/primitive-wheeltec-r550-chassis-rbnx
     config:
       odom_topic_name: /odom_combined
       imu_topic: /imu/data
@@ -91,7 +91,7 @@ primitive:
   # via robot_state_publisher (no extrinsics static_transform_publisher
   # needed — the URDF already defines this joint).
   - name: n10p_lslidar
-    url: https://github.com/syswonder/primitive-wheeltec-r550-chassis-rbnx/tree/main/n10p_lslidar
+    url: https://github.com/syswonder/primitive-wheeltec-lslidar_n10p-lidar-rbnx
     config:
       scan_topic: /scan
       frame_id: laser
@@ -106,12 +106,23 @@ primitive:
   #   robonix/primitive/camera/snapshot       → one-shot RGB JPEG (VLM-facing)
   #   robonix/primitive/camera/depth_snapshot → one-shot depth JPEG
   - name: astra_s_camera
-    url: https://github.com/syswonder/primitive-wheeltec-r550-chassis-rbnx/tree/main/astra_s_camera
+    url: https://github.com/syswonder/primitive-orbbec-camera
+    branch: main
     config:
-      color_topic: /camera/color/image_raw
-      depth_topic: /camera/depth/image_raw
-      intrinsics_topic: /camera/color/camera_info
-      frame_id: camera_link
+      camera_name: camera_gemini330
+      camera_model: gemini330_series
+      serial_number: CPC85630010A
+      enable_color: true
+      enable_depth: true
+      enable_point_cloud: false
+      enable_imu: false
+      color_profile: 640x480x30
+      depth_profile: 640x480x30
+      depth_registration: true
+      base_frame: base_link
+      cam_frame: camera_gemini330_color_optical_frame
+      sentinel_timeout_s: 45.0
+
 
 # ── services ────────────────────────────────────────────────────────────────
 service:
